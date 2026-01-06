@@ -7,8 +7,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.TextView;
 import android.view.View;
-
 import androidx.appcompat.app.AppCompatActivity;
+
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -33,5 +33,6 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }, SPLASH_DURATION);
+
     }
 }

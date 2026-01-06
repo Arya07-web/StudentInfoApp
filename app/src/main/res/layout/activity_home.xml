@@ -16,15 +16,14 @@
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Info Card -->
+    <!-- Student Info Card -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="8dp"
         app:layout_constraintTop_toBottomOf="@id/tvWelcome"
@@ -37,24 +36,52 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Info Text -->
+            <!-- Student Info -->
             <TextView
                 android:id="@+id/tvInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Name:\nAge:"
-                android:textSize="16sp"/>
+                android:text="Name:\nAge:\nRoll No:\nDept:\nYear:\nPercentage:\nGrade:"
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Add Student Button -->
+            <Button
+                android:id="@+id/btnAddStudent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Student"
+                android:layout_marginBottom="8dp"/>
 
             <!-- Edit Info Button -->
             <Button
                 android:id="@+id/btnEdit"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Edit Info"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Delete Student Button -->
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete Student"
+                android:backgroundTint="@android:color/holo_red_dark"
+                android:textColor="@android:color/white"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <!-- RecyclerView to show all students -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStudents"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/cardInfo"
+        app:layout_constraintBottom_toTopOf="@id/btnLogout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- Logout Button -->
     <Button
@@ -63,8 +90,9 @@
         android:layout_height="wrap_content"
         android:text="LOGOUT"
         android:backgroundTint="@android:color/holo_red_dark"
-        app:layout_constraintTop_toBottomOf="@id/cardInfo"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="16dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

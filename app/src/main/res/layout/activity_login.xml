@@ -27,7 +27,8 @@
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="24dp"/>
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"/>
 
     <!-- Age Input -->
     <EditText
@@ -42,28 +43,88 @@
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="16dp"/>
 
-    <!-- Login Button -->
+    <!-- Roll Number Input -->
+    <EditText
+        android:id="@+id/etRoll"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Roll Number"
+        app:layout_constraintTop_toBottomOf="@id/etAge"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"/>
 
+    <!-- Department Input -->
+    <EditText
+        android:id="@+id/etDept"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Department"
+        app:layout_constraintTop_toBottomOf="@id/etRoll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Year Input -->
+    <EditText
+        android:id="@+id/etYear"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Year"
+        app:layout_constraintTop_toBottomOf="@id/etDept"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Percentage Input -->
+    <EditText
+        android:id="@+id/etPercentage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Percentage"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/etYear"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Grade Input -->
+    <EditText
+        android:id="@+id/etGrade"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Grade"
+        app:layout_constraintTop_toBottomOf="@id/etPercentage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Remember Me Checkbox -->
     <CheckBox
         android:id="@+id/cbRemember"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Remember Me"
-        app:layout_constraintTop_toBottomOf="@id/etAge"
+        app:layout_constraintTop_toBottomOf="@id/etGrade"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="24dp"/>
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"/>
 
+    <!-- Login Button -->
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
-        android:layout_marginTop="24dp"
         android:text="LOGIN"
+        app:layout_constraintTop_toBottomOf="@id/cbRemember"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbRemember" />
-
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
