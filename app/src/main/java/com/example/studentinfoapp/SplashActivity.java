@@ -8,7 +8,8 @@ import android.view.animation.Animation;
 import android.widget.TextView;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.google.firebase.auth.FirebaseAuth;
+import android.os.Looper;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -18,7 +19,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
+       FirebaseAuth mAuth = FirebaseAuth.getInstance();
         View logo = findViewById(R.id.logoRectangle);
         TextView title = findViewById(R.id.tvAppName);
 
@@ -28,11 +29,16 @@ public class SplashActivity extends AppCompatActivity {
         logo.startAnimation(fadeIn);
         title.startAnimation(fadeIn);
 
-        new Handler().postDelayed(() -> {
-            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-            startActivity(intent);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (mAuth.getCurrentUser() != null) {
+                startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+            } else {
+                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+            }
             finish();
-        }, SPLASH_DURATION);
+
+        }, 2000);
+
 
     }
 }

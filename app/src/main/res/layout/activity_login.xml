@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -18,113 +17,50 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="40dp"/>
 
-    <!-- Name Input -->
     <EditText
-        android:id="@+id/etName"
+        android:id="@+id/etEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Enter Name"
+        android:hint="Enter Email"
+        android:inputType="textEmailAddress"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="24dp"/>
 
-    <!-- Age Input -->
     <EditText
-        android:id="@+id/etAge"
+        android:id="@+id/etPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Enter Age"
-        android:inputType="number"
-        app:layout_constraintTop_toBottomOf="@id/etName"
+        android:hint="Enter Password"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@id/etEmail"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="16dp"/>
 
-    <!-- Roll Number Input -->
-    <EditText
-        android:id="@+id/etRoll"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Enter Roll Number"
-        app:layout_constraintTop_toBottomOf="@id/etAge"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Department Input -->
-    <EditText
-        android:id="@+id/etDept"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Enter Department"
-        app:layout_constraintTop_toBottomOf="@id/etRoll"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Year Input -->
-    <EditText
-        android:id="@+id/etYear"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Enter Year"
-        app:layout_constraintTop_toBottomOf="@id/etDept"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Percentage Input -->
-    <EditText
-        android:id="@+id/etPercentage"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Enter Percentage"
-        android:inputType="number"
-        app:layout_constraintTop_toBottomOf="@id/etYear"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Grade Input -->
-    <EditText
-        android:id="@+id/etGrade"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Enter Grade"
-        app:layout_constraintTop_toBottomOf="@id/etPercentage"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Remember Me Checkbox -->
-    <CheckBox
-        android:id="@+id/cbRemember"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Remember Me"
-        app:layout_constraintTop_toBottomOf="@id/etGrade"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Login Button -->
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="LOGIN"
-        app:layout_constraintTop_toBottomOf="@id/cbRemember"
+        app:layout_constraintTop_toBottomOf="@id/etPassword"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="24dp"/>
+
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="CREATE ACCOUNT"
+        app:layout_constraintTop_toBottomOf="@id/btnLogin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="12dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

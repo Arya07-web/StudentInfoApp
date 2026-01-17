@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -24,6 +25,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.firebase.auth.FirebaseAuth;
+
 
 
 
@@ -39,20 +42,42 @@ public class HomeActivity extends AppCompatActivity {
     String loggedRollNo;
     RecyclerView rvStudents;
     StudentAdapter studentAdapter;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+    String selectedStudentId = null; // Firebase key of selected student
+    int selectedStudentIndex = -1;   // Optional: index in the list for RecyclerView updates
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+
+        if (mAuth.getCurrentUser() == null) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+        String uid = mAuth.getCurrentUser().getUid();
+        String email = mAuth.getCurrentUser().getEmail();
+        tvWelcome = findViewById(R.id.tvWelcome);
+        tvWelcome.setText("Welcome, " + email);
+
+
         // 1️⃣ Initialize Firebase with correct region URL
         databaseReference = FirebaseDatabase
                 .getInstance("https://studentmanagementapp-cf281-default-rtdb.asia-southeast1.firebasedatabase.app")
-                .getReference("students");
+                .getReference("students").child(uid);
         rvStudents = findViewById(R.id.rvStudents);
         rvStudents.setLayoutManager(new LinearLayoutManager(this));
         studentAdapter = new StudentAdapter(studentList);
         rvStudents.setAdapter(studentAdapter);
+        studentAdapter.setOnStudentClickListener((student, position) -> {
+            selectedStudentId = studentIdList.get(position); // Firebase key
+            selectedStudentIndex = position;
+            tvInfo.setText("Selected: " + student.name + " (" + student.rollNo + ")");
+        });
 
 
         // 2️⃣ Initialize views
@@ -64,53 +89,29 @@ public class HomeActivity extends AppCompatActivity {
         Button btnDelete = findViewById(R.id.btnDelete);
         preferences = getSharedPreferences("StudentInfo", MODE_PRIVATE);
 
-        // 3️⃣ Get logged-in student data from Intent
-        Intent intent = getIntent();
-        String name = intent.getStringExtra("NAME");
-        int age = intent.getIntExtra("AGE", 0);
-        loggedRollNo = intent.getStringExtra("ROLL");
-        String dept = intent.getStringExtra("DEPT");
-        String year = intent.getStringExtra("YEAR");
-        int percentage = intent.getIntExtra("PERCENTAGE", 0);
-        String grade = intent.getStringExtra("GRADE");
 
-        tvWelcome.setText("Welcome, " + name + "!");
-
-        // Display info immediately
-        tvInfo.setText(
-                "Name: " + name +
-                        "\nAge: " + age +
-                        "\nRoll: " + loggedRollNo +
-                        "\nDept: " + dept +
-                        "\nYear: " + year +
-                        "\nPercentage: " + percentage +
-                        "\nGrade: " + grade
-        );
-
-        // 4️⃣ Add logged-in student to Firebase
-        addStudentToFirebase(name, age, loggedRollNo, dept, year, percentage, grade);
 
         // 5️⃣ Fetch students in real-time
         fetchStudents();
 
         // 6️⃣ Button listeners
-        btnAddStudent.setOnClickListener(v -> showAddEditDialog(null, null));
+        btnAddStudent.setOnClickListener(v -> {
+            showAddEditDialog(null, null);
+        });
+
+
 
         btnEdit.setOnClickListener(v -> {
-            if (!studentList.isEmpty()) {
-                for (int i = 0; i < studentList.size(); i++) {
-                    if (studentList.get(i).rollNo.equals(loggedRollNo)) {
-                        showAddEditDialog(studentList.get(i), studentIdList.get(i));
-                        return;
-                    }
-                }
-                Toast.makeText(this, "Student not found in database", Toast.LENGTH_SHORT).show();
+            if (selectedStudentId != null && selectedStudentIndex != -1) {
+                Student studentToEdit = studentList.get(selectedStudentIndex);
+                showAddEditDialog(studentToEdit, selectedStudentId);
             } else {
-                Toast.makeText(this, "No student to edit", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please select a student to edit", Toast.LENGTH_SHORT).show();
             }
         });
 
-        btnLogout.setOnClickListener(v -> {
+
+       /* btnLogout.setOnClickListener(v -> {
             new AlertDialog.Builder(this)
                     .setTitle("Logout")
                     .setMessage("Are you sure you want to logout?")
@@ -121,20 +122,44 @@ public class HomeActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("No", null)
                     .show();
+        });*/
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+            finish();
         });
+
         btnDelete.setOnClickListener(v -> {
-            if (!loggedRollNo.isEmpty()) {
-                databaseReference.child(loggedRollNo).removeValue()
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Student deleted!", Toast.LENGTH_SHORT).show();
-                            // Clear the info card after deletion
-                            tvInfo.setText("");
+            if (selectedStudentId != null) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Delete Student")
+                        .setMessage("Are you sure you want to delete this student?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            databaseReference.child(selectedStudentId).removeValue()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(this, "Student deleted!", Toast.LENGTH_SHORT).show();
+                                        // Update RecyclerView immediately
+                                        if (selectedStudentIndex != -1) {
+                                            studentList.remove(selectedStudentIndex);
+                                            studentIdList.remove(selectedStudentIndex);
+                                            studentAdapter.notifyItemRemoved(selectedStudentIndex);
+                                        }
+                                        // Clear selection
+                                        selectedStudentId = null;
+                                        selectedStudentIndex = -1;
+                                        tvInfo.setText("");
+                                    })
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(this, "Failed to delete: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                                    );
                         })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Failed to delete: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
+                        .setNegativeButton("No", null)
+                        .show();
+            } else {
+                Toast.makeText(this, "Please select a student to delete", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     // Add student to Firebase
@@ -182,38 +207,45 @@ public class HomeActivity extends AppCompatActivity {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
+        // --- Name ---
         EditText etName = new EditText(this);
         etName.setHint("Name");
         if (student != null) etName.setText(student.name);
         layout.addView(etName);
 
+        // --- Age ---
         EditText etAge = new EditText(this);
         etAge.setHint("Age");
         etAge.setInputType(InputType.TYPE_CLASS_NUMBER);
         if (student != null) etAge.setText(String.valueOf(student.age));
         layout.addView(etAge);
 
+        // --- Roll No ---
         EditText etRoll = new EditText(this);
         etRoll.setHint("Roll No");
         if (student != null) etRoll.setText(student.rollNo);
         layout.addView(etRoll);
 
+        // --- Department ---
         EditText etDept = new EditText(this);
         etDept.setHint("Department");
         if (student != null) etDept.setText(student.department);
         layout.addView(etDept);
 
+        // --- Year ---
         EditText etYear = new EditText(this);
         etYear.setHint("Year");
         if (student != null) etYear.setText(student.year);
         layout.addView(etYear);
 
+        // --- Percentage ---
         EditText etPerc = new EditText(this);
         etPerc.setHint("Percentage");
         etPerc.setInputType(InputType.TYPE_CLASS_NUMBER);
         if (student != null) etPerc.setText(String.valueOf(student.percentage));
         layout.addView(etPerc);
 
+        // --- Grade ---
         EditText etGrade = new EditText(this);
         etGrade.setHint("Grade");
         if (student != null) etGrade.setText(student.grade);
@@ -221,36 +253,46 @@ public class HomeActivity extends AppCompatActivity {
 
         builder.setView(layout);
 
+        // --- Positive Button ---
         builder.setPositiveButton(student == null ? "Add" : "Save", (dialog, which) -> {
             try {
+                // --- Get values ---
                 String name = etName.getText().toString().trim();
-                int age = Integer.parseInt(etAge.getText().toString().trim());
                 String roll = etRoll.getText().toString().trim();
                 String dept = etDept.getText().toString().trim();
                 String year = etYear.getText().toString().trim();
-                int perc = Integer.parseInt(etPerc.getText().toString().trim());
                 String grade = etGrade.getText().toString().trim();
+                int age = Integer.parseInt(etAge.getText().toString().trim());
+                int perc = Integer.parseInt(etPerc.getText().toString().trim());
+
+                // --- Validate ---
+                if (name.isEmpty() || roll.isEmpty() || dept.isEmpty() || year.isEmpty() || grade.isEmpty()) {
+                    Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 Student newStudent = new Student(roll, name, age, perc, grade, dept, year);
 
-                if (student == null) {
-                    databaseReference.child(roll).setValue(newStudent);
-                    Toast.makeText(this, "Student added!", Toast.LENGTH_SHORT).show();
-                } else {
-                    databaseReference.child(studentId).setValue(newStudent);
-                    Toast.makeText(this, "Student updated!", Toast.LENGTH_SHORT).show();
+                if (student == null) { // Add new
+                    databaseReference.child(roll).setValue(newStudent)
+                            .addOnSuccessListener(aVoid -> Toast.makeText(this, "Student added!", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                } else { // Edit existing
+                    databaseReference.child(studentId).setValue(newStudent)
+                            .addOnSuccessListener(aVoid -> Toast.makeText(this, "Student updated!", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                 }
-            } catch (Exception e) {
-                Toast.makeText(this, "Invalid input!", Toast.LENGTH_SHORT).show();
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid number input!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        builder.setNeutralButton("Delete", (dialog, which) -> {
-            if (student != null && studentId != null) {
+        // --- Delete button (only for edit) ---
+        if (student != null) {
+            builder.setNeutralButton("Delete", (dialog, which) -> {
                 databaseReference.child(studentId).removeValue()
                         .addOnSuccessListener(aVoid -> {
                             Toast.makeText(this, "Student deleted!", Toast.LENGTH_SHORT).show();
-                            // Optional: remove from local list immediately to avoid delay
                             int index = studentIdList.indexOf(studentId);
                             if (index != -1) {
                                 studentList.remove(index);
@@ -258,13 +300,12 @@ public class HomeActivity extends AppCompatActivity {
                                 studentAdapter.notifyItemRemoved(index);
                             }
                         })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
-            }
-        });
+                        .addOnFailureListener(e -> Toast.makeText(this, "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            });
+        }
 
         builder.setNegativeButton("Cancel", null);
         builder.show();
     }
+
 }
